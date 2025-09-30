@@ -26,8 +26,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy application source
 COPY app ./app
 
-# Create non-root user
-RUN adduser --disabled-password --gecos "" qruser
+# Create non-root user and required directories
+RUN adduser --disabled-password --gecos "" qruser \
+    && mkdir -p storage/uploads storage/processed data \
+    && chown -R qruser:qruser storage data
 USER qruser
 
 EXPOSE 8000

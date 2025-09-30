@@ -24,7 +24,12 @@ def make_storage_filename(original_name: str, suffix: str) -> str:
 
 
 def persist_bytes(directory: Path, filename: str, data: bytes) -> Path:
-    directory.mkdir(parents=True, exist_ok=True)
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+    except (PermissionError, OSError):
+        # Directory should already exist in production environments
+        if not directory.exists():
+            raise
     destination = directory / filename
     destination.write_bytes(data)
     return destination

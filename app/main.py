@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .config import settings
+from .config import settings, ensure_directories
 from .database import init_db
 from .routers import health, logs, processing
 from .utils.file_ops import cleanup_storage
@@ -13,6 +13,7 @@ from .utils.file_ops import cleanup_storage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # pragma: no cover - startup side effects
+    ensure_directories()
     init_db()
     cleanup_storage(
         directories=[

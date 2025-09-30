@@ -20,7 +20,24 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-settings.storage_root.mkdir(parents=True, exist_ok=True)
-(settings.storage_root / "uploads").mkdir(parents=True, exist_ok=True)
-(settings.storage_root / "processed").mkdir(parents=True, exist_ok=True)
-settings.database_path.parent.mkdir(parents=True, exist_ok=True)
+
+def ensure_directories():
+    """Ensure required directories exist with proper error handling."""
+    import os
+    
+    directories = [
+        settings.storage_root,
+        settings.storage_root / "uploads",
+        settings.storage_root / "processed",
+        settings.database_path.parent,
+    ]
+    
+    for directory in directories:
+        try:
+            directory.mkdir(parents=True, exist_ok=True)
+        except (PermissionError, OSError) as e:
+            # Check if directory already exists
+            if not directory.exists():
+                print(f"Warning: Could not create directory {directory}: {e}")
+                # In production environments, directories should be created
+                # by the deployment process or container setup
